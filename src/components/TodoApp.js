@@ -1,18 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Todos from "./Todos";
 import Header from "../components/layout/Header";
 import AddTodo from "./AddTodo"
-
-//khai bao thu vien axios
+import Footer from "../store/containers/Footer";
+//khai báo thư viện axios
 import axios from "axios";
 
-class TodoApp extends React.Component {
-    state = {
+function TodoApp() {
+
+    const [state, setState] = useState({
         todos: []
-    };
-    handleCheckboxChange = id => {
-        this.setState({
-            todos: this.state.todos.map(todo => {
+    });
+    const handleCheckboxChange = id => {
+        setState({
+            todos: state.todos.map(todo => {
                 if (todo.id === id) {
                     todo.completed = !todo.completed;
                 }
@@ -20,18 +21,18 @@ class TodoApp extends React.Component {
             })
         });
     };
-    deleteTodo = id => {
+    const deleteTodo = id => {
         axios.delete(`https://jsonplaceholder.typicode.com/todos/${id}`)
-            .then(reponse => this.setState({
+            .then(reponse => setState({
                 todos: [
-                    ...this.state.todos.filter(todo => {
+                    ...state.todos.filter(todo => {
                         return todo.id !== id;
                     })
                 ]
             }))
     };
 
-    addTodo = title => {
+    const addTodo = title => {
         const todoData = {
             title: title,
             completed: false
@@ -39,35 +40,34 @@ class TodoApp extends React.Component {
         axios.post("https://jsonplaceholder.typicode.com/todos", todoData)
             .then(response => {
                 console.log(response.data)
-                this.setState({
-                    todos: [...this.state.todos, response.data]
+                setState({
+                    todos: [...state.todos, response.data]
                 })
             });
     };
 
-
-    componentDidMount() {
+    useEffect(() => {
         const config = {
             params: {
                 _limit: 5
             }
 
         }
-        //tao GET request de lay danh sach todos
+        // tạo GET request để lấy danh sách todos
         axios.get("https://jsonplaceholder.typicode.com/todos", config)
-            .then(response => this.setState({ todos: response.data }));
-    }
+            .then(response => setState({ todos: response.data }));
+    }, []);
 
-    render() {
-        return (
-            <div className="container">
-                <Header />
-                <AddTodo addTodo={this.addTodo} />
-                <Todos todos={this.state.todos}
-                    handleChange={this.handleCheckboxChange}
-                    deleteTodo={this.deleteTodo} />
-            </div>
-        );
-    }
+    return (
+        <div className="container">
+            <Header />
+            <AddTodo addTodo={addTodo} />
+            <Todos todos={state.todos}
+                handleChange={handleCheckboxChange}
+                deleteTodo={deleteTodo} />
+            <Footer />
+        </div>
+    );
+
 }
 export default TodoApp;

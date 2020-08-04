@@ -10,9 +10,11 @@ class Todos extends React.Component {
                         <TodoItem
                             key={todo.id}
                             todo={todo}
-                            handleChange={this.props.handleChange }
+                            handleChange={this.props.handleChange}
                             deleteTodo={this.props.deleteTodo}
                         />
+
+
                     ))}
                 </ul>
             </div>
@@ -20,3 +22,4 @@ class Todos extends React.Component {
     }
 }
 export default Todos;
+
